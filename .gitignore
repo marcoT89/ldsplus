@@ -11,3 +11,6 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 .env
+resources/assets/js/commons/laroute.js
+public/js/app.js
+public/css/app.css
