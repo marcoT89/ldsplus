@@ -18,5 +18,9 @@
         "lodash": "^4.17.4",
         "popper.js": "^1.12",
         "vue": "^2.5.7"
+    },
+    "dependencies": {
+        "pug": "^2.0.3",
+        "vuedraggable": "^2.16.0"
     }
 }
