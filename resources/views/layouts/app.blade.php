@@ -20,6 +20,12 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    <script>
+        window.App = <?php echo json_encode([
+            'csrf_token' => csrf_token(),
+        ]) ?>;
+    </script>
 </head>
 <body>
     <div id="app">

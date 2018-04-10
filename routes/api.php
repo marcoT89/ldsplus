@@ -16,3 +16,15 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Public routes
+Route::namespace('Api')->name('api.')->group(function () {
+    Route::get('wards', 'WardsController@index')->name('wards.index');
+});
+
+// Protected routes
+Route::middleware('auth:api')->namespace('Api')->name('api.')->group(function () {
+    Route::resource('organizations', 'OrganizationsController', ['except' => ['edit']]);
+    Route::resource('users', 'UsersController', ['only' => ['index']]);
+    Route::get('users/check-status', 'UsersController@checkStatus')->name('users.check-status');
+});

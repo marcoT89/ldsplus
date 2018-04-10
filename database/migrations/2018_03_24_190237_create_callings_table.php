@@ -6,26 +6,21 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateCallingsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('callings', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->unsignedInteger('organization_id');
+            $table->string('gender')->default('both');
             $table->timestamps();
+
+            $table->foreign('organization_id')
+                ->references('id')->on('organizations')
+                ->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('callings');

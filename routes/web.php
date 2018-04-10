@@ -1,5 +1,6 @@
 <?php
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,5 +17,17 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+Route::post('register', 'Api\RegisterController@store')->name('ajax.register')->middleware('guest');
 
-Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+    Route::view('/chamados', 'callings')->name('callings');
+    Route::view('/organizations', 'organizations')->name('organizations');
+    Route::view('/discursantes', 'speakers')->name('speakers');
+});
+
+Route::view('/discursantes', 'pages.teste');
+
+/*Route::get('/discursantes', function () {
+    return  view('pages.teste');
+});*/

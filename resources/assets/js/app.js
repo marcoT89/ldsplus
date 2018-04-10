@@ -8,13 +8,39 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
+import { Form } from './utils';
+
+window.Form = Form;
+
+import Vuex from 'vuex';
+import VCalendar from 'v-calendar';
+import 'v-calendar/lib/v-calendar.min.css';
+Vue.use(Vuex);
+Vue.use(VCalendar, {
+    formats: {
+        title: 'MMMM YYYY',
+        weekdays: 'W',
+        navMonths: 'MMM',
+        input: ['DD/MM/YYYY', 'L', 'YYYY-MM-DD', 'YYYY/MM/DD'],
+        dayPopover: 'L',
+        data: ['L', 'YYYY-MM-DD', 'YYYY/MM/DD'],
+        // visibility: 'focus',
+        // popover: {
+        // }
+    }
+});
 
 /**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
+ * Add components here
  */
+import store from './store';
+require('./callings');
+require('./organizations');
+require('./auth');
+require('./forms');
+require('./elements');
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+    store
 });

@@ -4,30 +4,30 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCallingPersonTable extends Migration
+class CreateCallingUserTable extends Migration
 {
     public function up()
     {
-        Schema::create('calling_person', function (Blueprint $table) {
+        Schema::create('calling_user', function (Blueprint $table) {
             $table->unsignedInteger('calling_id');
-            $table->unsignedInteger('person_id');
-            $table->string('status')->default('call');
+            $table->unsignedInteger('user_id');
+            $table->string('status')->default('assign');
             $table->date('released_at')->nullable();
-            $table->date('called_at')->nullable();
+            $table->date('assigned_at')->nullable();
             $table->timestamps();
 
             $table->foreign('calling_id')
                 ->references('id')->on('callings')
                 ->onDelete('cascade');
 
-            $table->foreign('person_id')
-                ->references('id')->on('people')
+            $table->foreign('user_id')
+                ->references('id')->on('users')
                 ->onDelete('cascade');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('calling_person');
+        Schema::dropIfExists('calling_user');
     }
 }

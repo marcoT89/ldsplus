@@ -2,6 +2,7 @@
 window._ = require('lodash');
 window.Popper = require('popper.js').default;
 window.laroute = require('./commons/laroute');
+window.route = laroute.route;
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -39,6 +40,10 @@ if (token) {
     console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
 
+import Vue from 'vue';
+
+Vue.prototype.$http = window.axios;
+Vue.prototype.$route = laroute.route;
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
