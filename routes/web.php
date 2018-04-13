@@ -23,11 +23,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
     Route::view('/chamados', 'callings')->name('callings');
     Route::view('/organizations', 'organizations')->name('organizations');
-    Route::view('/discursantes', 'speakers')->name('speakers');
 });
-
-Route::view('/discursantes', 'pages.teste');
-
-/*Route::get('/discursantes', function () {
-    return  view('pages.teste');
-});*/
