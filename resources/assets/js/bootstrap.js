@@ -43,7 +43,7 @@ if (token) {
 import Vue from 'vue';
 
 Vue.prototype.$http = window.axios;
-Vue.prototype.$route = laroute.route;
+Vue.prototype.$laroute = laroute.route;
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Calling extends Model
 {
@@ -29,5 +30,13 @@ class Calling extends Model
         return $this->belongsToMany(User::class)
             ->withPivot('status', 'assigned_at', 'released_at')
             ->withTimestamps();
+    }
+
+    public function scopeChanges(Builder $query)
+    {
+        return $query->whereHas('users', function ($userQuery) {
+            return $userQuery->whereHas('callingsToAssign')
+                ->orWhereHas('callingsToRelease');
+        });
     }
 }

@@ -5,6 +5,7 @@ export default {
     state: {
         organizations: [],
         users: [],
+        changes: [],
     },
 
     mutations: {
@@ -42,6 +43,10 @@ export default {
                 Vue.set(state.users, index, user);
             }
         },
+
+        setChanges(state, { changes }) {
+            state.changes = changes
+        },
     },
 
     actions: {
@@ -61,6 +66,14 @@ export default {
                     commit('setOrganizations', { organizations });
                     return organizations
                 });
+        },
+
+        fetchCallingChanges({ commit }) {
+            return axios.get(route('api.callings.changes'))
+                .then(({ data }) => {
+                    commit('setChanges', { changes: data.data })
+                    return data
+                })
         },
 
         updateCalling({ commit }, { user, calling }) {

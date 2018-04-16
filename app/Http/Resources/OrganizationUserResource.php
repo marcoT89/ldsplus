@@ -9,7 +9,7 @@ class OrganizationUserResource extends JsonResource
     public function toArray($request)
     {
         return collect(parent::toArray($request))->merge([
-            'callings' => CallingResource::collection($this->callings),
+            'callings' => $this->callings,
         ])->toArray();
     }
 }

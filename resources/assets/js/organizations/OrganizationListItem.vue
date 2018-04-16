@@ -47,6 +47,7 @@
 
 <script>
 import draggable from 'vuedraggable';
+import { mapActions } from 'vuex';
 
 export default {
     components: { draggable },
@@ -69,9 +70,12 @@ export default {
         updateCalling(event, calling) {
             if (event.added) {
                 const user = event.added.element;
-                this.$store.dispatch('organizations/updateCalling', { user, calling });
+                this.$store.dispatch('organizations/updateCalling', { user, calling })
+                    .then(() => this.fetchCallingChanges());
             }
-        }
+        },
+
+        ...mapActions('organizations', ['fetchCallingChanges']),
     }
 }
 </script>
