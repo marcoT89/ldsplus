@@ -8,9 +8,10 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
-import { Form } from './utils';
+import { Form, Errors } from './utils';
 
 window.Form = Form;
+window.Errors = Errors;
 
 import Vuex from 'vuex';
 import VCalendar from 'v-calendar';

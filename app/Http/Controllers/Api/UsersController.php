@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Interactions\User\UpdateCalling;
 use App\Models\Calling;
+use Illuminate\Http\Response;
 
 class UsersController extends Controller
 {
@@ -29,6 +30,10 @@ class UsersController extends Controller
             'user' => $user,
             'calling' => $calling,
         ]);
+
+        if (!$outcome->valid) {
+            return response()->json($outcome->errors->toArray(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         return new UserResource($outcome->result);
     }

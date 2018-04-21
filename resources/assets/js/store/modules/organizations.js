@@ -28,7 +28,8 @@ export default {
                 })
             })
         },
-        updateUser(state, { user }) {
+        updateUser(state, { user, errors }) {
+            Vue.set(user, 'errors', errors);
             state.organizations.forEach(org => {
                 org.callings.forEach(calling => {
                     let index = calling.users.findIndex(p => p.id === user.id);
@@ -78,12 +79,21 @@ export default {
 
         updateCalling({ commit }, { user, calling }) {
             return axios.get(route('api.users.check-status', {
-                user_id: user.id,
-                calling_id: calling ? calling.id : '',
-            })).then(({ data }) => {
-                commit('updateUser', { user: data.data });
-                return data.data;
-            });
+                    user_id: user.id,
+                    calling_id: calling ? calling.id : '',
+                }))
+                .then(({ data }) => {
+                    commit('updateUser', { user: data.data });
+                    return data.data;
+                })
+                .catch(e => {
+                    if (e.response && e.response.status === 422) {
+                        const errors = new Errors();
+                        errors.record(e.response.data);
+                        commit('updateUser', { user, errors })
+                    }
+                    return Promise.reject(e);
+                });
         },
     }
 }

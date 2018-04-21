@@ -7,10 +7,14 @@ use App\Models\User;
 use App\Models\Calling;
 use App\Interactions\User\UpdateCalling;
 use Carbon\Carbon;
+use Tests\Traits\Interaction;
 
 class UpdateCallingTest extends TestCase
 {
+    use Interaction;
+
     private $user;
+    private $interaction = UpdateCalling::class;
 
     protected function setUp()
     {
@@ -20,14 +24,14 @@ class UpdateCallingTest extends TestCase
 
     private function subject(User $user, ? Calling $calling)
     {
-        return UpdateCalling::run([
+        return $this->interact([
             'user' => $user,
             'calling' => $calling,
         ]);
     }
 
     /** @test */
-    public function when_has_no_calling_and_receive_one()
+    public function it_has_one_calling_to_assign_when_has_no_calling_and_receive_one()
     {
         $calling = factory(Calling::class)->create();
 
@@ -42,7 +46,7 @@ class UpdateCallingTest extends TestCase
     }
 
     /** @test */
-    public function when_has_released_callings_and_receives_another_one()
+    public function it_has_one_calling_to_assign_when_has_released_callings_and_receives_another_one()
     {
         $callings = factory(Calling::class, 3)->create()->each(function ($calling) {
             $calling->users()->save($this->user);
@@ -62,7 +66,7 @@ class UpdateCallingTest extends TestCase
     }
 
     /** @test */
-    public function when_has_assigned_calling_and_receives_a_new_one()
+    public function it_puts_current_calling_to_release_when_has_assigned_calling_and_receives_a_new_one()
     {
         $assigned = factory(Calling::class)->create();
         $released = factory(Calling::class)->create();
@@ -91,7 +95,7 @@ class UpdateCallingTest extends TestCase
     }
 
     /** @test */
-    public function when_has_calling_to_assign_and_receives_another_one()
+    public function it_removes_callings_to_assign_when_receives_another_one()
     {
         $callingToAssign = factory(Calling::class)->create();
         $this->user->callings()->save($callingToAssign);
@@ -108,7 +112,7 @@ class UpdateCallingTest extends TestCase
     }
 
     /** @test */
-    public function reasign_calling_when_receives_the_same_to_be_released()
+    public function it_reasigns_calling_when_receives_the_same_to_be_released()
     {
         $callingToRelease = factory(Calling::class)->create();
         $this->user->callings()->save($callingToRelease);
@@ -129,7 +133,7 @@ class UpdateCallingTest extends TestCase
     }
 
     /** @test */
-    public function when_calling_is_null_it_releases_from_all_callings()
+    public function it_releases_from_all_callings_when_calling_is_null()
     {
         $assigned = factory(Calling::class)->create();
         $this->user->callings()->save($assigned);
@@ -146,5 +150,16 @@ class UpdateCallingTest extends TestCase
         $this->assertTrue($outcome->valid);
         $this->assertCount(0, $this->user->assignedCallings);
         $this->assertCount(1, $this->user->callingsToRelease);
+    }
+
+    /** @test */
+    public function it_is_invalid_when_calling_gender_is_not_allowed()
+    {
+        $gender = $this->user->gender == 'male' ? 'female' : 'male';
+        $maleCalling = factory(Calling::class)->create(['gender' => $gender]);
+
+        $outcome = $this->subject($this->user, $maleCalling);
+
+        $this->assertFalse($outcome->valid);
     }
 }

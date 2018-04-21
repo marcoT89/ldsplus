@@ -64,7 +64,6 @@ export default {
                 const user = event.added.element;
                 this.updateCalling({ user, calling: null })
                     .then(res => {
-                        console.log('updatecalling', res)
                         this.fetchCallingChanges()
                     });
             }
