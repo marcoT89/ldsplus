@@ -6,6 +6,14 @@ export default {
         organizations: [],
         users: [],
         changes: [],
+        filters: {
+            users: {
+                byName: null,
+            },
+            organizations: {
+                byName: null,
+            },
+        }
     },
 
     mutations: {
@@ -62,9 +70,11 @@ export default {
             Vue.set(oldUser, 'editing', false);
             console.log('updating new user', oldUser);
         },
-
         setChanges(state, { changes }) {
             state.changes = changes
+        },
+        updateUsersFilters(state, { byName }) {
+            state.filters.users.byName = byName;
         },
     },
 
@@ -82,7 +92,16 @@ export default {
                 });
         },
 
-        fetchOrganizations({ commit }) {
+        fetchUsersWithouCalling({ state, commit }) {
+            return axios.get(route('api.users.without-calling'), { params: state.filters.users })
+                .then(({ data }) => data.data)
+                .then(users => {
+                    commit('setUsers', { users });
+                    return users;
+                });
+        },
+
+        fetchOrganizations({ commit, state }) {
             return axios.get(route('api.organizations.index'))
                 .then(({ data }) => data.data)
                 .then(organizations => {

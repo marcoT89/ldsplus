@@ -2,7 +2,11 @@
     .row
         .col-md-3
             .form-group.d-flex
-                input.form-control(placeholder="Filtrar pessoas...")
+                input-text.w-100(
+                    placeholder="Filtrar pessoas...",
+                    v-model="search_users",
+                    :loading="input_searching",
+                    @input="userFilterChange")
                 button.btn.btn-primary.ml-2(@click="newUser", title="Adicionar Pessoa")
                     i.fa.fa-plus
             ul.list-group
@@ -29,12 +33,16 @@
 <script>
 import Draggable from 'vuedraggable';
 import { mapActions, mapState, mapMutations } from 'vuex';
+import _ from 'lodash';
 
 export default {
     components: { Draggable },
 
     data() {
         return {
+            input_searching: false,
+            search_users: null,
+            search_organizations: null,
             options: {
                 animation: 150,
                 group: 'users',
@@ -62,8 +70,15 @@ export default {
     },
 
     methods: {
-        ...mapActions('organizations', ['fetchUsers', 'fetchOrganizations', 'updateCalling', 'fetchCallingChanges', 'createUser']),
-        ...mapMutations('organizations', ['setUsers', 'distributeUsersToCallings', 'newUser']),
+        ...mapActions('organizations', [
+            'fetchUsers',
+            'fetchUsersWithouCalling',
+            'fetchOrganizations',
+            'updateCalling',
+            'fetchCallingChanges',
+            'createUser',
+        ]),
+        ...mapMutations('organizations', ['setUsers', 'distributeUsersToCallings', 'newUser', 'updateUsersFilters']),
 
         releaseCalling(event) {
             if (event.added) {
@@ -74,6 +89,12 @@ export default {
                     });
             }
         },
+
+        userFilterChange: _.debounce(function (byName) {
+            this.input_searching = true;
+            this.updateUsersFilters({ byName });
+            this.fetchUsersWithouCalling().then(() => this.input_searching = false);
+        }, 500),
     },
 }
 </script>

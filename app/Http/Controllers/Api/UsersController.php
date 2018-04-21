@@ -11,6 +11,7 @@ use App\Models\Calling;
 use Illuminate\Http\Response;
 use App\Http\Requests\UserRequest;
 use App\Interactions\Users\CreateUser;
+use App\Filters\UserFilters;
 
 class UsersController extends Controller
 {
@@ -19,9 +20,9 @@ class UsersController extends Controller
         return UserResource::collection($this->currentWardUsers()->get());
     }
 
-    public function withoutCalling()
+    public function withoutCalling(UserFilters $filters)
     {
-        return UserResource::collection($this->currentWardUsers()->whereDoesntHave('callings')->get());
+        return UserResource::collection($this->currentWardUsers()->withoutCalling()->filter($filters)->get());
     }
 
     public function checkStatus(Request $request)

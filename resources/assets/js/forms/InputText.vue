@@ -18,20 +18,35 @@
             .input-group-append(v-if="groupAppend")
                 span.input-group-text {{ groupAppend }}
 
-
-        input.form-control(v-if="!group",
-            :autofocus="autofocus",
-            :type="type",
-            :value="value",
-            @input="$emit('input', $event.target.value)",
-            :placeholder="placeholder",
-            :class="{'is-invalid': form_errors && form_errors.has(field)}",
-            :disabled="disabled",
-            :readonly="readonly")
+        div(v-if="!group", :class="{ 'input-loading': loading }")
+            input.form-control(
+                :autofocus="autofocus",
+                :type="type",
+                :value="value",
+                @input="$emit('input', $event.target.value)",
+                :placeholder="placeholder",
+                :class="{'is-invalid': form_errors && form_errors.has(field)}",
+                :disabled="disabled",
+                :readonly="readonly")
+            i.fa.fa-spin.fa-spinner(v-if="loading")
 
 
         p.invalid-feedback.mb-0(v-if="form_errors && form_errors.has(field)") {{ form_errors.get(field) }}
 </template>
+
+<style lang="sass" scoped>
+.input-loading
+    position: relative
+    input
+        position: relative
+        padding-right: 2rem
+    i.fa.fa-spin
+        position: absolute
+        right: 10px
+        top: 11px
+        color: rgba(0, 0, 0, 0.5)
+</style>
+
 
 <script>
     export default {
@@ -49,6 +64,7 @@
             groupPrepend: { default: null },
             groupAppend : { default: null },
             autofocus   : { default: false },
+            loading     : { default: false },
         },
 
         computed: {
