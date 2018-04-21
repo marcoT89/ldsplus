@@ -2,16 +2,19 @@
 
 namespace App\Interactions\User;
 
-use ZachFlower\EloquentInteractions\Interaction;
-use App\Models\Calling;
 use Illuminate\Support\Facades\DB;
+use App\Interactions\Interaction;
+use App\Rules\SameGender;
 
 class UpdateCalling extends Interaction
 {
-    public $validations = [
-        'user' => 'required|object:App\Models\User',
-        'calling' => 'nullable|object:App\Models\Calling',
-    ];
+    public function validations()
+    {
+        return [
+            'calling' => 'nullable|object:App\Models\Calling',
+            'user' => ['required', 'object:App\Models\User', new SameGender(optional($this->calling)->gender)],
+        ];
+    }
 
     public function execute()
     {

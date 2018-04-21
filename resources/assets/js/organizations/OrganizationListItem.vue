@@ -7,8 +7,7 @@
             draggable.list-container(
                 v-model="calling.users",
                 :options="options",
-                @change="updateCalling($event, calling)"
-                :class="{ 'invalid': calling.status === 'invalid' }"
+                @change="onCallingChange($event, calling)"
             )
                 user-card(v-for="user of calling.users", :key="user.id", :user="user")
 </template>
@@ -47,6 +46,7 @@
 
 <script>
 import draggable from 'vuedraggable';
+import { mapActions } from 'vuex';
 
 export default {
     components: { draggable },
@@ -57,6 +57,7 @@ export default {
 
     data() {
         return {
+            errors: new Errors(),
             options: {
                 animation: 150,
                 group: 'users',
@@ -66,12 +67,19 @@ export default {
     },
 
     methods: {
-        updateCalling(event, calling) {
+        async onCallingChange(event, calling) {
             if (event.added) {
-                const user = event.added.element;
-                this.$store.dispatch('organizations/updateCalling', { user, calling });
+                try {
+                    const user = event.added.element;
+                    await this.updateCalling({ user, calling });
+                    this.fetchCallingChanges();
+                } catch (e) {
+                    console.log('error', e.response);
+                }
             }
-        }
+        },
+
+        ...mapActions('organizations', ['updateCalling', 'fetchCallingChanges']),
     }
 }
 </script>

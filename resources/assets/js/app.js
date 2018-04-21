@@ -8,14 +8,18 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
-import { Form } from './utils';
+import { Form, Errors } from './utils';
 
 window.Form = Form;
+window.Errors = Errors;
 
 import Vuex from 'vuex';
 import VCalendar from 'v-calendar';
 import 'v-calendar/lib/v-calendar.min.css';
+import VueRouter from 'vue-router';
+
 Vue.use(Vuex);
+Vue.use(VueRouter);
 Vue.use(VCalendar, {
     formats: {
         title: 'MMMM YYYY',
@@ -24,9 +28,6 @@ Vue.use(VCalendar, {
         input: ['DD/MM/YYYY', 'L', 'YYYY-MM-DD', 'YYYY/MM/DD'],
         dayPopover: 'L',
         data: ['L', 'YYYY-MM-DD', 'YYYY/MM/DD'],
-        // visibility: 'focus',
-        // popover: {
-        // }
     }
 });
 
@@ -42,5 +43,5 @@ require('./elements');
 
 const app = new Vue({
     el: '#app',
-    store
+    store,
 });

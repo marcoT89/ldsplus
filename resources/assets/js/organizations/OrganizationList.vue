@@ -1,21 +1,19 @@
 <template lang="pug">
-    div
-        h1.mb-4 Organizações
-        .row
-            .col-md-3
-                .form-group
-                    input.form-control(placeholder="Filtrar pessoas...")
-                ul.list-group
-                    draggable.list-container(v-model="users", :options="options", @change="releaseCalling")
-                        user-card(v-for="user in users", :key="user.id", :user="user")
+    .row
+        .col-md-3
+            .form-group
+                input.form-control(placeholder="Filtrar pessoas...")
+            ul.list-group
+                draggable.list-container(v-model="users", :options="options", @change="releaseCalling")
+                    user-card(v-for="user in users", :key="user.id", :user="user")
 
-            .col-md-9
-                .form-group
-                    input.form-control(placeholder="Filtrar organizações...")
+        .col-md-9
+            .form-group
+                input.form-control(placeholder="Filtrar organizações...")
 
-                .form-row
-                    .col-md-6.mb-3(v-for="organization of organizations", :key="organization.id")
-                        organization-list-item(:organization="organization")
+            .form-row
+                .col-md-6.mb-3(v-for="organization of organizations", :key="organization.id")
+                    organization-list-item(:organization="organization")
 
 </template>
 
@@ -58,13 +56,16 @@ export default {
     },
 
     methods: {
-        ...mapActions('organizations', ['fetchUsers', 'fetchOrganizations', 'updateCalling']),
+        ...mapActions('organizations', ['fetchUsers', 'fetchOrganizations', 'updateCalling', 'fetchCallingChanges']),
         ...mapMutations('organizations', ['setUsers', 'distributeUsersToCallings']),
 
         releaseCalling(event) {
             if (event.added) {
                 const user = event.added.element;
-                this.updateCalling({ user, calling: null });
+                this.updateCalling({ user, calling: null })
+                    .then(res => {
+                        this.fetchCallingChanges()
+                    });
             }
         },
     },
