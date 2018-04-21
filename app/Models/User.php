@@ -6,10 +6,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Passport\HasApiTokens;
 use App\Traits\BelongsToWard;
+use App\Traits\Models\LastScope;
+use App\Traits\Models\FilterScope;
+use Illuminate\Database\Eloquent\Builder;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable, BelongsToWard;
+    use HasApiTokens, Notifiable, BelongsToWard, LastScope, FilterScope;
 
     protected $fillable = [
         'name', 'email', 'gender', 'birthday', 'password', 'ward_id',
@@ -18,6 +21,16 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function scopeWithoutCalling(Builder $query)
+    {
+        return $query->whereDoesntHave('callings', function ($query) {
+            return $query->whereIn('calling_user.status', [
+                Calling::STATUS_ASSIGN,
+                Calling::STATUS_ASSIGNED,
+            ]);
+        });
+    }
 
     public function callings()
     {
