@@ -1,11 +1,13 @@
 <template lang="pug">
     .row
         .col-md-3
-            .form-group
+            .form-group.d-flex
                 input.form-control(placeholder="Filtrar pessoas...")
+                button.btn.btn-primary.ml-2(@click="newUser", title="Adicionar Pessoa")
+                    i.fa.fa-plus
             ul.list-group
                 draggable.list-container(v-model="users", :options="options", @change="releaseCalling")
-                    user-card(v-for="user in users", :key="user.id", :user="user")
+                    user-card(v-for="user in users", :key="user.id", :user="user", @create="createUser")
 
         .col-md-9
             .form-group
@@ -47,6 +49,10 @@ export default {
         }));
     },
 
+    mounted() {
+        $('[title]').tooltip();
+    },
+
     computed: {
         users: {
             get() { return this.$store.state.organizations.users },
@@ -56,8 +62,8 @@ export default {
     },
 
     methods: {
-        ...mapActions('organizations', ['fetchUsers', 'fetchOrganizations', 'updateCalling', 'fetchCallingChanges']),
-        ...mapMutations('organizations', ['setUsers', 'distributeUsersToCallings']),
+        ...mapActions('organizations', ['fetchUsers', 'fetchOrganizations', 'updateCalling', 'fetchCallingChanges', 'createUser']),
+        ...mapMutations('organizations', ['setUsers', 'distributeUsersToCallings', 'newUser']),
 
         releaseCalling(event) {
             if (event.added) {

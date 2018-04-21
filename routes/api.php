@@ -26,6 +26,6 @@ Route::namespace('Api')->name('api.')->group(function () {
 Route::middleware('auth:api')->namespace('Api')->name('api.')->group(function () {
     Route::resource('organizations', 'OrganizationsController', ['except' => ['edit']]);
     Route::get('callings/changes', 'CallingsController@changes')->name('callings.changes');
-    Route::resource('users', 'UsersController', ['only' => ['index']]);
+    Route::resource('users', 'UsersController', ['only' => ['index', 'store']]);
     Route::get('users/check-status', 'UsersController@checkStatus')->name('users.check-status');
 });

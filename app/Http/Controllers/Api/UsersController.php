@@ -9,6 +9,8 @@ use App\Http\Resources\UserResource;
 use App\Interactions\User\UpdateCalling;
 use App\Models\Calling;
 use Illuminate\Http\Response;
+use App\Http\Requests\UserRequest;
+use App\Interactions\Users\CreateUser;
 
 class UsersController extends Controller
 {
@@ -32,15 +34,21 @@ class UsersController extends Controller
         ]);
 
         if (!$outcome->valid) {
-            return response()->json($outcome->errors->toArray(), Response::HTTP_UNPROCESSABLE_ENTITY);
+            return response()->json(['errors' => $outcome->errors->toArray()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         return new UserResource($outcome->result);
     }
 
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        //
+        $outcome = CreateUser::run(array_merge($request->validated(), ['ward_id' => $this->currentWard()->id]));
+
+        if (!$outcome->valid) {
+            return response()->json(['errors' => $outcome->errors->toArray()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return new UserResource($outcome->result);
     }
 
     public function show(User $user)

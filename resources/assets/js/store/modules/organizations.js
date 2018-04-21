@@ -12,6 +12,18 @@ export default {
         setUsers(state, { users }) {
             state.users = users;
         },
+        newUser(state) {
+            if (state.users.find(u => !u.id)) return;
+
+            state.users.unshift({
+                name: null,
+                editing: true,
+                gender: 'male',
+            })
+        },
+        removeFirstUser(state) {
+            return state.users.shift();
+        },
         setOrganizations(state, { organizations }) {
             state.organizations = organizations;
         },
@@ -44,6 +56,12 @@ export default {
                 Vue.set(state.users, index, user);
             }
         },
+        updateNewUser(state, { user }) {
+            let oldUser = state.users[0];
+            oldUser = Object.assign(oldUser, user);
+            Vue.set(oldUser, 'editing', false);
+            console.log('updating new user', oldUser);
+        },
 
         setChanges(state, { changes }) {
             state.changes = changes
@@ -51,6 +69,10 @@ export default {
     },
 
     actions: {
+        createUser({ commit }, { user }) {
+            return axios.post(route('api.users.store'), user);
+        },
+
         fetchUsers({ commit }) {
             return axios.get(route('api.users.index'))
                 .then(({ data }) => data.data)
@@ -89,7 +111,7 @@ export default {
                 .catch(e => {
                     if (e.response && e.response.status === 422) {
                         const errors = new Errors();
-                        errors.record(e.response.data);
+                        errors.record(e.response.data.errors);
                         commit('updateUser', { user, errors })
                     }
                     return Promise.reject(e);
