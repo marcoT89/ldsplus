@@ -1,6 +1,6 @@
 <template lang="pug">
     .row
-        .col-md-3
+        .col-md-3.mb-5
             .form-group.d-flex
                 input-text.w-100(
                     placeholder="Filtrar pessoas...",
@@ -13,7 +13,7 @@
                 draggable.list-container(v-model="users", :options="options", @change="releaseCalling")
                     user-card(v-for="user in users", :key="user.id", :user="user", @create="createUser")
 
-        .col-md-9
+        .col-md-9.mb-5
             .form-group
                 input.form-control(placeholder="Filtrar organizações...")
 

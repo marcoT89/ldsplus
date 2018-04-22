@@ -11,6 +11,7 @@
                     .custom-control.custom-radio.custom-control-inline
                         input.custom-control-input(type="radio", id="female", v-model="user_form.gender", value="female")
                         label.custom-control-label(for="female") Feminino
+                    .w-100
                     button-loading.btn.btn-success.float-right.mt-2(@click="create", :loading="user_form.submitting") Salvar
                     button.btn.btn-default.float-right.mt-2.mr-2(@click="removeFirstUser") Cancelar
 

@@ -1,0 +1,68 @@
+{
+    "name": "lds-plus",
+    "scripts": {
+        "postdeploy": "php artisan db:seed"
+    },
+    "env": {
+        "APP_DEBUG": {
+            "value": "true"
+        },
+        "APP_ENV": {
+            "required": true
+        },
+        "APP_KEY": {},
+        "APP_NAME": {
+            "required": true
+        },
+        "APP_URL": {
+            "required": true
+        },
+        "DATABASE_URL": {
+            "required": true
+        },
+        "DB_CONNECTION": {
+            "required": true
+        },
+        "MAIL_DRIVER": {
+            "required": true
+        },
+        "MAIL_HOST": {
+            "required": true
+        },
+        "MAIL_PASSWORD": {
+            "required": true
+        },
+        "MAIL_PORT": {
+            "required": true
+        },
+        "MAIL_USERNAME": {
+            "required": true
+        },
+        "STRIPE_KEY": {
+            "required": true
+        },
+        "STRIPE_SECRET": {
+            "required": true
+        },
+        "LOG_CHANNEL": {
+            "required": true
+        }
+    },
+    "formation": {
+        "web": {
+            "quantity": 1,
+            "size": "hobby"
+        }
+    },
+    "addons": [
+        "heroku-postgresql:hobby-dev"
+    ],
+    "buildpacks": [
+        {
+            "url": "heroku/nodejs"
+        },
+        {
+            "url": "heroku/php"
+        }
+    ]
+}
