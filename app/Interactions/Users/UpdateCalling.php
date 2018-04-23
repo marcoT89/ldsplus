@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interactions\User;
+namespace App\Interactions\Users;
 
 use Illuminate\Support\Facades\DB;
 use App\Interactions\Interaction;

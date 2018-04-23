@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-use App\Interactions\User\UpdateCalling;
+use App\Interactions\Users\UpdateCalling;
 use App\Models\Calling;
 use Illuminate\Http\Response;
 use App\Http\Requests\UserRequest;

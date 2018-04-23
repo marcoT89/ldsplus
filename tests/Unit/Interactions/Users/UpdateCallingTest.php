@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\Unit\Interactions\User;
+namespace Tests\Unit\Interactions\Users;
 
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Calling;
-use App\Interactions\User\UpdateCalling;
 use Carbon\Carbon;
 use Tests\Traits\Interaction;
+use App\Interactions\Users\UpdateCalling;
 
 class UpdateCallingTest extends TestCase
 {
