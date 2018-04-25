@@ -7,14 +7,14 @@ use App\Models\User;
 use App\Models\Calling;
 use Carbon\Carbon;
 use Tests\Traits\Interaction;
-use App\Interactions\Users\UpdateCalling;
+use App\Interactions\Users\IndicateCalling;
 
-class UpdateCallingTest extends TestCase
+class IndicateCallingTest extends TestCase
 {
     use Interaction;
 
     private $user;
-    private $interaction = UpdateCalling::class;
+    private $interaction = IndicateCalling::class;
 
     protected function setUp()
     {

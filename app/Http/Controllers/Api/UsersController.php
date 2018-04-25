@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-use App\Interactions\Users\UpdateCalling;
+use App\Interactions\Users\IndicateCalling;
 use App\Models\Calling;
 use Illuminate\Http\Response;
 use App\Http\Requests\UserRequest;
@@ -29,7 +29,7 @@ class UsersController extends Controller
     {
         $user = User::where('id', $request->user_id)->with('callings')->first();
         $calling = Calling::where('id', $request->calling_id)->with('organization')->first();
-        $outcome = UpdateCalling::run([
+        $outcome = IndicateCalling::run([
             'user' => $user,
             'calling' => $calling,
         ]);

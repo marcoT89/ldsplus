@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use App\Interactions\Interaction;
 use App\Rules\SameGender;
 
-class UpdateCalling extends Interaction
+class IndicateCalling extends Interaction
 {
     public function validations()
     {
