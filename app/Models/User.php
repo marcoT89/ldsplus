@@ -26,8 +26,9 @@ class User extends Authenticatable
     {
         return $query->whereDoesntHave('callings', function ($query) {
             return $query->whereIn('calling_user.status', [
-                Calling::STATUS_ASSIGN,
-                Calling::STATUS_ASSIGNED,
+                Calling::STATUS_INDICATED,
+                Calling::STATUS_SUPPORTED,
+                Calling::STATUS_DESIGNATED,
             ]);
         });
     }
@@ -35,7 +36,7 @@ class User extends Authenticatable
     public function callings()
     {
         return $this->belongsToMany(Calling::class)
-            ->withPivot('status', 'assigned_at', 'released_at')
+            ->withPivot('status', 'designated_at', 'released_at')
             ->withTimestamps();
     }
 
@@ -51,9 +52,9 @@ class User extends Authenticatable
         return $this->callings()->wherePivot('status', '!=', Calling::STATUS_RELEASED);
     }
 
-    public function assignedCallings()
+    public function designatedCallings()
     {
-        return $this->callings()->wherePivot('status', Calling::STATUS_ASSIGNED);
+        return $this->callings()->wherePivot('status', Calling::STATUS_DESIGNATED);
     }
 
     public function releasedCallings()
@@ -61,9 +62,9 @@ class User extends Authenticatable
         return $this->callings()->wherePivot('status', Calling::STATUS_RELEASED);
     }
 
-    public function callingsToAssign()
+    public function indicatedCallings()
     {
-        return $this->callings()->wherePivot('status', Calling::STATUS_ASSIGN);
+        return $this->callings()->wherePivot('status', Calling::STATUS_INDICATED);
     }
 
     public function callingsToRelease()
@@ -73,35 +74,40 @@ class User extends Authenticatable
 
     public function hasCalling(Calling $calling)
     {
-        return $this->assignedCallings->contains($calling) || $this->callingsToRelease->contains($calling);
+        return $this->hasDesignatedCalling($calling) || $this->willReleaseCalling($calling);
     }
 
-    public function assignCalling(Calling $calling)
+    public function hasDesignatedCalling(Calling $calling)
+    {
+        return $this->designatedCallings->contains($calling);
+    }
+
+    public function indicateCalling(Calling $calling)
     {
         if (!$this->hasCalling($calling)) {
-            $this->assignedCallings()->attach($calling->id, ['status' => Calling::STATUS_ASSIGN]);
+            $this->indicatedCallings()->attach($calling->id, ['status' => Calling::STATUS_INDICATED]);
         }
     }
 
-    public function willRelease(Calling $calling)
+    public function willReleaseCalling(Calling $calling)
     {
         return $this->callingsToRelease->contains($calling);
     }
 
-    public function reassignCalling(Calling $calling)
+    public function redesignateCalling(Calling $calling)
     {
-        if ($this->willRelease($calling)) {
-            $this->callingsToRelease()->updateExistingPivot($calling->id, ['status' => Calling::STATUS_ASSIGNED]);
+        if ($this->willReleaseCalling($calling)) {
+            $this->callingsToRelease()->updateExistingPivot($calling->id, ['status' => Calling::STATUS_DESIGNATED]);
         }
     }
 
     public function releaseCallings()
     {
-        $this->assignedCallings->map->id->each(function ($callingId) {
-            $this->assignedCallings()->updateExistingPivot($callingId, [
+        $this->designatedCallings->map->id->each(function ($callingId) {
+            $this->designatedCallings()->updateExistingPivot($callingId, [
                 'status' => Calling::STATUS_RELEASE,
             ]);
         });
-        $this->callingsToAssign()->detach();
+        $this->indicatedCallings()->detach();
     }
 }

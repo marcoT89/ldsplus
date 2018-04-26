@@ -6,6 +6,7 @@
  */
 
 require('./bootstrap');
+require('./directives');
 
 window.Vue = require('vue');
 import { Form, Errors } from './utils';

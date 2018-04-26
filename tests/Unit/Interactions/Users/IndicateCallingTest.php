@@ -31,22 +31,22 @@ class IndicateCallingTest extends TestCase
     }
 
     /** @test */
-    public function it_has_one_calling_to_assign_when_has_no_calling_and_receive_one()
+    public function it_has_one_indicated_calling_when_receive_one()
     {
         $calling = factory(Calling::class)->create();
 
         $outcome = $this->subject($this->user, $calling);
-        $this->user = $outcome->result->fresh();
+        $this->user = $outcome->result;
 
         $this->assertTrue($outcome->valid);
         $this->assertInternalType('int', $this->user->id);
         $this->assertInstanceOf(User::class, $this->user);
-        $this->assertCount(1, $this->user->callingsToAssign);
-        $this->assertEmpty($this->user->assignedCallings);
+        $this->assertCount(1, $this->user->indicatedCallings);
+        $this->assertEmpty($this->user->designatedCallings);
     }
 
     /** @test */
-    public function it_has_one_calling_to_assign_when_has_released_callings_and_receives_another_one()
+    public function it_has_one_indicated_calling_when_has_released_callings_and_receives_another_one()
     {
         $callings = factory(Calling::class, 3)->create()->each(function ($calling) {
             $calling->users()->save($this->user);
@@ -58,39 +58,46 @@ class IndicateCallingTest extends TestCase
         $calling = factory(Calling::class)->create();
 
         $outcome = $this->subject($this->user, $calling);
-        $this->user = $outcome->result->fresh();
+        $this->user = $outcome->result;
 
         $this->assertTrue($outcome->valid);
         $this->assertCount(3, $this->user->releasedCallings);
-        $this->assertCount(1, $this->user->callingsToAssign);
+        $this->assertCount(1, $this->user->indicatedCallings);
     }
 
     /** @test */
-    public function it_puts_current_calling_to_release_when_has_assigned_calling_and_receives_a_new_one()
+    public function it_puts_current_callings_to_release_when_has_a_designated_calling_and_receives_an_indicated_calling()
     {
-        $assigned = factory(Calling::class)->create();
+        // Arrange
+        $designated = factory(Calling::class)->create();
         $released = factory(Calling::class)->create();
-        $calling = factory(Calling::class)->create();
+        $newCalling = factory(Calling::class)->create();
+
         $released->users()->save($this->user);
-        $released->users()->updateExistingPivot($this->user->id, [
+        $released->users()->updateExistingPivot($this->user, [
             'status' => Calling::STATUS_RELEASED,
             'released_at' => Carbon::now(),
         ]);
-        $assigned->users()->save($this->user);
-        $assigned->users()->updateExistingPivot($this->user->id, [
-            'status' => Calling::STATUS_ASSIGNED,
-            'assigned_at' => Carbon::now(),
+
+        $designated->users()->save($this->user);
+        $designated->users()->updateExistingPivot($this->user, [
+            'status' => Calling::STATUS_DESIGNATED,
+            'designated_at' => Carbon::now(),
         ]);
 
-        $this->assertCount(1, $this->user->assignedCallings);
+        // Asserts
+        $this->assertCount(1, $this->user->designatedCallings);
         $this->assertCount(1, $this->user->releasedCallings);
 
-        $outcome = $this->subject($this->user, $calling);
-        $this->user = $outcome->result->fresh();
+        // Act
+        $outcome = $this->subject($this->user, $newCalling);
+        $this->user = $outcome->result;
 
+        // Asserts
         $this->assertTrue($outcome->valid);
-        $this->assertCount(1, $this->user->callingsToAssign);
-        $this->assertCount(1, $this->user->callingsToRelease);
+        $this->assertTrue($this->user->indicatedCallings->contains($newCalling));
+        $this->assertTrue($this->user->callingsToRelease->contains($designated));
+        $this->assertTrue($this->user->releasedCallings->contains($released));
         $this->assertCount(1, $this->user->releasedCallings);
     }
 
@@ -100,56 +107,67 @@ class IndicateCallingTest extends TestCase
         $callingToAssign = factory(Calling::class)->create();
         $this->user->callings()->save($callingToAssign);
         $this->user->callings()->updateExistingPivot($callingToAssign->id, [
-            'status' => Calling::STATUS_ASSIGN,
+            'status' => Calling::STATUS_INDICATED,
         ]);
         $calling = factory(Calling::class)->create();
 
         $outcome = $this->subject($this->user, $calling);
-        $this->user = $outcome->result->fresh();
+        $this->user = $outcome->result;
 
         $this->assertTrue($outcome->valid);
         $this->assertCount(1, $this->user->callings);
     }
 
     /** @test */
-    public function it_reasigns_calling_when_receives_the_same_to_be_released()
+    public function it_redesignates_calling_when_receives_the_same_to_be_released()
     {
-        $callingToRelease = factory(Calling::class)->create();
-        $this->user->callings()->save($callingToRelease);
-        $this->user->callings()->updateExistingPivot($callingToRelease->id, [
-            'status' => Calling::STATUS_RELEASE,
-            'assigned_at' => Carbon::now(),
+        // Arrange
+        $designated = factory(Calling::class)->create();
+        $this->user->callings()->save($designated);
+        $this->user->callings()->updateExistingPivot($designated->id, [
+            'status' => Calling::STATUS_DESIGNATED,
+            'designated_at' => Carbon::now(),
         ]);
+        $this->user->releaseCallings();
+        $this->user->refresh();
 
+        // Asserts
         $this->assertCount(1, $this->user->callingsToRelease);
-        $this->assertCount(0, $this->user->assignedCallings);
+        $this->assertCount(0, $this->user->designatedCallings);
 
-        $outcome = $this->subject($this->user, $callingToRelease);
-        $this->user = $outcome->result->fresh();
+        // Act
+        $outcome = $this->subject($this->user, $designated);
+        $this->user = $outcome->result;
 
+        // Asserts
         $this->assertTrue($outcome->valid);
-        $this->assertCount(1, $this->user->assignedCallings);
+        $this->assertCount(1, $this->user->designatedCallings);
         $this->assertCount(0, $this->user->callingsToRelease);
     }
 
     /** @test */
     public function it_releases_from_all_callings_when_calling_is_null()
     {
-        $assigned = factory(Calling::class)->create();
-        $this->user->callings()->save($assigned);
-        $this->user->callings()->updateExistingPivot($assigned->id, [
-            'status' => Calling::STATUS_ASSIGNED,
-            'assigned_at' => Carbon::now(),
+        // Arrange
+        $designated = factory(Calling::class)->create();
+        $this->user->callings()->save($designated);
+        $this->user->callings()->updateExistingPivot($designated->id, [
+            'status' => Calling::STATUS_DESIGNATED,
+            'designated_at' => Carbon::now(),
         ]);
+        $this->user->refresh();
 
-        $this->assertCount(1, $this->user->assignedCallings);
+        // Asserts
+        $this->assertTrue($this->user->designatedCallings->contains($designated));
 
+        // Acts
         $outcome = $this->subject($this->user, null);
-        $this->user = $outcome->result->fresh();
+        $this->user = $outcome->result;
 
+        // Asserts
         $this->assertTrue($outcome->valid);
-        $this->assertCount(0, $this->user->assignedCallings);
-        $this->assertCount(1, $this->user->callingsToRelease);
+        $this->assertFalse($this->user->designatedCallings->contains($designated));
+        $this->assertTrue($this->user->callingsToRelease->contains($designated));
     }
 
     /** @test */

@@ -11,7 +11,7 @@ class CallingsController extends Controller
     public function changes()
     {
         return OrganizationUserResource::collection(
-            User::with('callings')->whereHas('callingsToAssign')
+            User::with('callings')->whereHas('indicatedCallings')
                 ->orWhereHas('callingsToRelease')
                 ->paginate()
         );

@@ -11,9 +11,12 @@ class CreateCallingUserTable extends Migration
         Schema::create('calling_user', function (Blueprint $table) {
             $table->unsignedInteger('calling_id');
             $table->unsignedInteger('user_id');
-            $table->string('status')->default('assign');
-            $table->date('released_at')->nullable();
-            $table->date('assigned_at')->nullable();
+            $table->string('status')->default('indicated');
+
+            $table->dateTime('supported_at')->nullable();
+            $table->dateTime('released_at')->nullable();
+            $table->dateTime('designated_at')->nullable();
+
             $table->timestamps();
 
             $table->foreign('calling_id')

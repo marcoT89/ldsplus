@@ -20,7 +20,7 @@
                 .text-danger(v-if="has_calling_to_release")
                     i.fa.fa-long-arrow-alt-down
             div(v-for="calling of user_form.callings", :key="calling.id")
-                small(:class="{'text-danger': calling.pivot && calling.pivot.status === 'release', 'text-success': calling.pivot && calling.pivot.status === 'assign'}") {{ calling.name }}
+                small(:class="{'text-danger': calling.pivot && calling.pivot.status === 'release', 'text-success': calling.pivot && calling.pivot.status === 'indicated'}") {{ calling.name }}
             small(v-if="errors.has('user')")
                 b.text-danger {{ errors.get('user') }}
 </template>
@@ -53,7 +53,7 @@ export default {
         has_new_calling() {
             return this.user
                 && this.user_form.callings
-                && this.user_form.callings.some(calling => calling.pivot.status === 'assign');
+                && this.user_form.callings.some(calling => calling.pivot.status === 'indicated');
         },
         has_calling_to_release() {
             return this.user
