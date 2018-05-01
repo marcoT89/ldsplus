@@ -36,7 +36,15 @@ class Calling extends BaseModel
     {
         return $query->whereHas('users', function ($userQuery) {
             return $userQuery->whereHas('indicatedCallings')
-                ->orWhereHas('callingsToRelease');
+                ->orWhereHas('callingsToRelease')
+                ->orWhereHas('supportedCallings');
+        });
+    }
+
+    public function scopeOfWard(Builder $query, Ward $ward)
+    {
+        return $query->whereHas('users', function ($userQuery) use ($ward) {
+            return $userQuery->whereWardId($ward->id);
         });
     }
 }

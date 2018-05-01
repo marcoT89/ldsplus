@@ -33,7 +33,7 @@ class IndicateCallingTest extends TestCase
     /** @test */
     public function it_has_one_indicated_calling_when_receive_one()
     {
-        $calling = factory(Calling::class)->create();
+        $calling = $this->create(Calling::class);
 
         $outcome = $this->subject($this->user, $calling);
         $this->user = $outcome->result;
@@ -55,7 +55,7 @@ class IndicateCallingTest extends TestCase
                 'released_at' => Carbon::now(),
             ]);
         });
-        $calling = factory(Calling::class)->create();
+        $calling = $this->create(Calling::class);
 
         $outcome = $this->subject($this->user, $calling);
         $this->user = $outcome->result;
@@ -66,12 +66,12 @@ class IndicateCallingTest extends TestCase
     }
 
     /** @test */
-    public function it_puts_current_callings_to_release_when_has_a_designated_calling_and_receives_an_indicated_calling()
+    public function it_puts_designated_callings_to_release_when_receive_a_new_one()
     {
         // Arrange
-        $designated = factory(Calling::class)->create();
-        $released = factory(Calling::class)->create();
-        $newCalling = factory(Calling::class)->create();
+        $designated = $this->create(Calling::class);
+        $released = $this->create(Calling::class);
+        $newCalling = $this->create(Calling::class);
 
         $released->users()->save($this->user);
         $released->users()->updateExistingPivot($this->user, [
@@ -104,12 +104,12 @@ class IndicateCallingTest extends TestCase
     /** @test */
     public function it_removes_callings_to_assign_when_receives_another_one()
     {
-        $callingToAssign = factory(Calling::class)->create();
+        $callingToAssign = $this->create(Calling::class);
         $this->user->callings()->save($callingToAssign);
         $this->user->callings()->updateExistingPivot($callingToAssign->id, [
             'status' => Calling::STATUS_INDICATED,
         ]);
-        $calling = factory(Calling::class)->create();
+        $calling = $this->create(Calling::class);
 
         $outcome = $this->subject($this->user, $calling);
         $this->user = $outcome->result;
@@ -122,7 +122,7 @@ class IndicateCallingTest extends TestCase
     public function it_redesignates_calling_when_receives_the_same_to_be_released()
     {
         // Arrange
-        $designated = factory(Calling::class)->create();
+        $designated = $this->create(Calling::class);
         $this->user->callings()->save($designated);
         $this->user->callings()->updateExistingPivot($designated->id, [
             'status' => Calling::STATUS_DESIGNATED,
@@ -149,7 +149,7 @@ class IndicateCallingTest extends TestCase
     public function it_releases_from_all_callings_when_calling_is_null()
     {
         // Arrange
-        $designated = factory(Calling::class)->create();
+        $designated = $this->create(Calling::class);
         $this->user->callings()->save($designated);
         $this->user->callings()->updateExistingPivot($designated->id, [
             'status' => Calling::STATUS_DESIGNATED,

@@ -4,7 +4,7 @@
             div.d-flex
                 .mr-auto(v-if="!user_form.editing") {{ user_form.name }}
                 .w-100(v-if="user_form.editing")
-                    input-text.mb-2(v-model="user_form.name", field="name", :errors="user_form.errors", :autofocus="true", placeholder="Nome da pessoa")
+                    input-text.mb-2(v-model="user_form.name", field="name", :form="user_form", :autofocus="true", placeholder="Nome da pessoa")
                     .custom-control.custom-radio.custom-control-inline
                         input.custom-control-input(type="radio", id="male", v-model="user_form.gender", value="male")
                         label.custom-control-label(for="male") Masculino
@@ -17,10 +17,15 @@
 
                 .text-success(v-if="has_new_calling")
                     i.fa.fa-long-arrow-alt-up
+                .text-primary(v-if="has_supported_calling")
+                    i.fa.fa-hand-paper
                 .text-danger(v-if="has_calling_to_release")
                     i.fa.fa-long-arrow-alt-down
             div(v-for="calling of user_form.callings", :key="calling.id")
-                small(:class="{'text-danger': calling.pivot && calling.pivot.status === 'release', 'text-success': calling.pivot && calling.pivot.status === 'indicated'}") {{ calling.name }}
+                small(
+                    :class="{'text-danger': isCallingStatus(calling, 'release'), 'text-success': isCallingStatus(calling, 'indicated'), 'text-primary': isCallingStatus(calling, 'supported')}")
+                    | {{ calling.name }}
+                    | {{ status(calling.pivot.status) }}
             small(v-if="errors.has('user')")
                 b.text-danger {{ errors.get('user') }}
 </template>
@@ -60,6 +65,11 @@ export default {
                 && this.user_form.callings
                 && this.user_form.callings.some(calling => calling.pivot.status === 'release');
         },
+        has_supported_calling() {
+            return this.user
+                && this.user_form.callings
+                && this.user_form.callings.some(calling => calling.pivot.status === 'supported');
+        },
         errors() { return this.user_form.errors || new Errors() },
     },
 
@@ -74,6 +84,17 @@ export default {
                 this.updateNewUser({ user: data.data });
             } catch ({ response }) {
                 console.error('ERROR', response);
+            }
+        },
+        isCallingStatus(calling, status) {
+            return calling.pivot.status === status;
+        },
+        status(status) {
+            switch (status) {
+                case 'supported': return '(Apoiado)';
+                case 'indicated': return '(Indicado)';
+                case 'release': return '(Desobrigar)';
+                default: return '';
             }
         },
     },

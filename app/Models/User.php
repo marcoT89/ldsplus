@@ -33,10 +33,17 @@ class User extends Authenticatable
         });
     }
 
+    public function scopeChanges(Builder $query)
+    {
+        return $query->whereHas('callingsToRelease')
+            ->orWhereHas('indicatedCallings')
+            ->orWhereHas('supportedCallings');
+    }
+
     public function callings()
     {
         return $this->belongsToMany(Calling::class)
-            ->withPivot('status', 'designated_at', 'released_at')
+            ->withPivot('status', 'designated_at', 'released_at', 'supported_at')
             ->withTimestamps();
     }
 
@@ -67,6 +74,11 @@ class User extends Authenticatable
         return $this->callings()->wherePivot('status', Calling::STATUS_INDICATED);
     }
 
+    public function supportedCallings()
+    {
+        return $this->callings()->wherePivot('status', Calling::STATUS_SUPPORTED);
+    }
+
     public function callingsToRelease()
     {
         return $this->callings()->wherePivot('status', Calling::STATUS_RELEASE);
@@ -74,12 +86,17 @@ class User extends Authenticatable
 
     public function hasCalling(Calling $calling)
     {
-        return $this->hasDesignatedCalling($calling) || $this->willReleaseCalling($calling);
+        return $this->hasDesignatedCalling($calling) || $this->hasSupportedCalling($calling) || $this->willReleaseCalling($calling);
     }
 
     public function hasDesignatedCalling(Calling $calling)
     {
         return $this->designatedCallings->contains($calling);
+    }
+
+    public function hasSupportedCalling(Calling $calling)
+    {
+        return $this->supportedCallings->contains($calling);
     }
 
     public function indicateCalling(Calling $calling)
