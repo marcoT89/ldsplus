@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-class Calling extends Model
+class Calling extends BaseModel
 {
-    const STATUS_ASSIGN = 'assign';
-    const STATUS_ASSIGNED = 'assigned';
-    const STATUS_RELEASE = 'release';
+    const STATUS_INDICATED = 'indicated';
+    const STATUS_SUPPORTED = 'supported';
+    const STATUS_DESIGNATED = 'designated';
     const STATUS_RELEASED = 'released';
+    const STATUS_RELEASE = 'release';
     const STATUS_INVALID = 'invalid';
 
     public function scopeActive($query)
@@ -28,15 +28,23 @@ class Calling extends Model
     public function users()
     {
         return $this->belongsToMany(User::class)
-            ->withPivot('status', 'assigned_at', 'released_at')
+            ->withPivot('status', 'designated_at', 'released_at')
             ->withTimestamps();
     }
 
     public function scopeChanges(Builder $query)
     {
         return $query->whereHas('users', function ($userQuery) {
-            return $userQuery->whereHas('callingsToAssign')
-                ->orWhereHas('callingsToRelease');
+            return $userQuery->whereHas('indicatedCallings')
+                ->orWhereHas('callingsToRelease')
+                ->orWhereHas('supportedCallings');
+        });
+    }
+
+    public function scopeOfWard(Builder $query, Ward $ward)
+    {
+        return $query->whereHas('users', function ($userQuery) use ($ward) {
+            return $userQuery->whereWardId($ward->id);
         });
     }
 }

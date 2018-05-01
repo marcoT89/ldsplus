@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Interactions\User;
+namespace App\Interactions\Users;
 
 use Illuminate\Support\Facades\DB;
 use App\Interactions\Interaction;
 use App\Rules\SameGender;
 
-class UpdateCalling extends Interaction
+class IndicateCalling extends Interaction
 {
     public function validations()
     {
@@ -24,19 +24,19 @@ class UpdateCalling extends Interaction
                 return $this->user->fresh();
             }
 
-            if ($this->user->hasCalling($this->calling)) {
-                if ($this->user->willRelease($this->calling)) {
-                    $this->user->callingsToAssign()->detach();
-                    $this->user->reassignCalling($this->calling);
-                }
+            if ($this->user->hasDesignatedCalling($this->calling)) {
                 return $this->user->fresh();
             }
 
-            if (!$this->user->hasCalling($this->calling)) {
-                $this->user->releaseCallings();
-                $this->user->callingsToAssign()->detach();
-                $this->user->assignCalling($this->calling);
+            if ($this->user->willReleaseCalling($this->calling)) {
+                $this->user->indicatedCallings()->detach();
+                $this->user->redesignateCalling($this->calling);
+                return $this->user->fresh();
             }
+
+            $this->user->releaseCallings();
+            $this->user->indicatedCallings()->detach();
+            $this->user->indicateCalling($this->calling);
 
             return $this->user->fresh();
         }, 2);

@@ -11,9 +11,7 @@ class CallingsController extends Controller
     public function changes()
     {
         return OrganizationUserResource::collection(
-            User::with('callings')->whereHas('callingsToAssign')
-                ->orWhereHas('callingsToRelease')
-                ->paginate()
+            User::ofWard($this->currentWard())->changes()->get()
         );
     }
 }

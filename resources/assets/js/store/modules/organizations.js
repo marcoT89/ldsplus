@@ -40,7 +40,7 @@ export default {
             state.organizations.forEach(organization => {
                 organization.callings.forEach(calling => {
                     users.forEach((user, index) => {
-                        if (user.callings.filter(c => ['assign', 'assigned'].includes(c.pivot.status)).some(c => c.id === calling.id)) {
+                        if (user.callings.filter(c => ['indicated', 'designated', 'supported'].includes(c.pivot.status)).some(c => c.id === calling.id)) {
                             calling.users.push(user);
                             users.splice(index, 1);
                         }

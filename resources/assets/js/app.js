@@ -6,6 +6,7 @@
  */
 
 require('./bootstrap');
+require('./directives');
 
 window.Vue = require('vue');
 import { Form, Errors } from './utils';
@@ -35,6 +36,7 @@ Vue.use(VCalendar, {
  * Add components here
  */
 import store from './store';
+require('./shared');
 require('./callings');
 require('./organizations');
 require('./auth');

@@ -3,9 +3,10 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tests\Traits\FactoriesHelpers;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication, DatabaseTransactions;
+    use CreatesApplication, RefreshDatabase, FactoriesHelpers;
 }
