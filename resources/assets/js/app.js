@@ -9,10 +9,13 @@ require('./bootstrap');
 require('./directives');
 
 window.Vue = require('vue');
-import { Form, Errors } from './utils';
+import { Form, Errors, confirm } from './utils';
 
 window.Form = Form;
 window.Errors = Errors;
+window.confirm = confirm;
+window.swal = require('sweetalert');
+window.moment = require('moment');
 
 import Vuex from 'vuex';
 import VCalendar from 'v-calendar';
@@ -42,6 +45,7 @@ require('./organizations');
 require('./auth');
 require('./forms');
 require('./elements');
+require('./users');
 
 const app = new Vue({
     el: '#app',

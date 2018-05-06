@@ -21,7 +21,9 @@
         "vue": "^2.5.7"
     },
     "dependencies": {
+        "moment": "^2.22.1",
         "pug": "^2.0.3",
+        "sweetalert": "^2.1.0",
         "v-calendar": "^0.9.1",
         "vue-router": "^3.0.1",
         "vuedraggable": "^2.16.0",
