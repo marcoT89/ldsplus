@@ -9,7 +9,7 @@
                 :options="options",
                 @change="onCallingChange($event, calling)"
             )
-                user-card(v-for="user of calling.users", :key="user.id", :user="user")
+                user-card(v-for="user of calling.users", :key="user.id", :user="user", @clicked="$emit('clicked', $event)")
 </template>
 
 

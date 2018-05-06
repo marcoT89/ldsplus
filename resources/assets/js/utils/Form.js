@@ -11,6 +11,7 @@ export default class Form {
 
         this.errors = new Errors();
         this.submitting = false
+        this.deleting = false
     }
 
     data() {
@@ -64,6 +65,7 @@ export default class Form {
     }
 
     delete(url, fieldName = null) {
+        this.deleting = true
         return this.submit('delete', url, fieldName);
     }
 
@@ -74,11 +76,13 @@ export default class Form {
             axios[requestType](url, data)
                 .then(response => {
                     this.submitting = false
+                    this.deleting = false
 
                     resolve(response);
                 })
                 .catch(error => {
                     this.submitting = false
+                    this.deleting = false
                     if (error.response.status === 422) this.onFail(error.response.data.errors);
 
                     reject(error.response);

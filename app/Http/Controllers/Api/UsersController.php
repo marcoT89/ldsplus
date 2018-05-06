@@ -15,6 +15,7 @@ use App\Filters\UserFilters;
 use App\Interactions\Users\SupportCalling;
 use App\Interactions\Users\DesignateCalling;
 use App\Interactions\Users\ReleaseCalling;
+use App\Interactions\Users\UpdateUser;
 
 class UsersController extends Controller
 {
@@ -28,22 +29,6 @@ class UsersController extends Controller
         return UserResource::collection($this->currentWardUsers()->withoutCalling()->filter($filters)->get());
     }
 
-    public function checkStatus(Request $request)
-    {
-        $user = User::where('id', $request->user_id)->with('callings')->first();
-        $calling = Calling::where('id', $request->calling_id)->with('organization')->first();
-        $outcome = IndicateCalling::run([
-            'user' => $user,
-            'calling' => $calling,
-        ]);
-
-        if (!$outcome->valid) {
-            return response()->json(['errors' => $outcome->errors->toArray()], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        return new UserResource($outcome->result);
-    }
-
     public function store(UserRequest $request)
     {
         $outcome = $this->interact(
@@ -52,6 +37,18 @@ class UsersController extends Controller
         );
 
         return new UserResource($outcome->result);
+    }
+
+    public function indicateCalling(Request $request)
+    {
+        $user = User::findOrFail($request->user_id);
+        $calling = Calling::find($request->calling_id);
+        return new UserResource(
+            $this->interact(IndicateCalling::class, [
+                'user' => $user,
+                'calling' => $calling,
+            ])->result
+        );
     }
 
     public function supportCalling(Request $request, User $user, Calling $calling)
@@ -86,16 +83,19 @@ class UsersController extends Controller
 
     public function show(User $user)
     {
-        //
+        return new UserResource($user);
     }
 
     public function update(Request $request, User $user)
     {
-        //
+        return new UserResource(
+            $this->interact(UpdateUser::class, $request->all())->result
+        );
     }
 
     public function destroy(User $user)
     {
-        //
+        $user->delete();
+        return response()->json('', Response::HTTP_NO_CONTENT);
     }
 }

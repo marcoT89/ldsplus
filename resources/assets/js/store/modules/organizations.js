@@ -32,6 +32,10 @@ export default {
         removeFirstUser(state) {
             return state.users.shift();
         },
+        removeUser(state, { id }) {
+            const index = state.users.findIndex(user => user.id === id);
+            state.users.splice(index, 1);
+        },
         setOrganizations(state, { organizations }) {
             state.organizations = organizations;
         },
@@ -119,7 +123,7 @@ export default {
         },
 
         updateCalling({ commit }, { user, calling }) {
-            return axios.get(route('api.users.check-status', {
+            return axios.put(route('api.users.indicate-calling', {
                     user_id: user.id,
                     calling_id: calling ? calling.id : '',
                 }))

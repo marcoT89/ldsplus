@@ -1,5 +1,5 @@
 <template lang="pug">
-    li.list-group-item.cursor-drag(:class="{ 'list-group-item-danger': errors.has('user') }")
+    li.list-group-item.cursor-drag(:class="{ 'list-group-item-danger': errors.has('user') }", @click.prevent.stop="emitClick")
         .d-flex.flex-column(:class="{ 'text-danger': errors.has('user') }")
             div.d-flex
                 .mr-auto(v-if="!user_form.editing") {{ user_form.name }}
@@ -97,6 +97,9 @@ export default {
                 default: return '';
             }
         },
+        emitClick() {
+            if (!this.user_form.editing) this.$emit('clicked', this.user);
+        }
     },
 }
 </script>

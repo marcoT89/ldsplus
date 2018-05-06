@@ -11,7 +11,7 @@
                     i.fa.fa-plus
             ul.list-group
                 draggable.list-container(v-model="users", :options="options", @change="releaseCalling")
-                    user-card(v-for="user in users", :key="user.id", :user="user", @create="createUser")
+                    user-card(v-for="user in users", :key="user.id", :user="user", @create="createUser", @clicked="openUserModal")
 
         .col-md-9.mb-5
             .form-group
@@ -19,8 +19,9 @@
 
             .form-row
                 .col-md-6.mb-3(v-for="organization of organizations", :key="organization.id")
-                    organization-list-item(:organization="organization")
+                    organization-list-item(:organization="organization", @clicked="openUserModal")
 
+        user-modal(ref="userModal", @updated="load", @removed="removeUser")
 </template>
 
 <style lang="sass" scoped>
@@ -52,9 +53,7 @@ export default {
     },
 
     created() {
-        this.fetchOrganizations().then(() => this.fetchUsers().then(() => {
-            this.distributeUsersToCallings();
-        }));
+        this.load();
     },
 
     mounted() {
@@ -78,7 +77,19 @@ export default {
             'fetchCallingChanges',
             'createUser',
         ]),
-        ...mapMutations('organizations', ['setUsers', 'distributeUsersToCallings', 'newUser', 'updateUsersFilters']),
+        ...mapMutations('organizations', [
+            'setUsers',
+            'distributeUsersToCallings',
+            'newUser',
+            'updateUsersFilters',
+            'removeUser'
+        ]),
+
+        load() {
+            this.fetchOrganizations().then(() => this.fetchUsers().then(() => {
+                this.distributeUsersToCallings();
+            }));
+        },
 
         releaseCalling(event) {
             if (event.added) {
@@ -95,6 +106,9 @@ export default {
             this.updateUsersFilters({ byName });
             this.fetchUsersWithouCalling().then(() => this.input_searching = false);
         }, 500),
+        openUserModal(user) {
+            this.$refs.userModal.open(user.id);
+        }
     },
 }
 </script>

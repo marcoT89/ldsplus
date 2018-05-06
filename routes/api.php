@@ -26,10 +26,10 @@ Route::namespace('Api')->name('api.')->group(function () {
 Route::middleware('auth:api')->namespace('Api')->name('api.')->group(function () {
     Route::resource('organizations', 'OrganizationsController', ['except' => ['edit']]);
     Route::get('callings/changes', 'CallingsController@changes')->name('callings.changes');
+    Route::put('users/indicate-calling', 'UsersController@indicateCalling')->name('users.indicate-calling');
     Route::put('users/{user}/callings/{calling}/release', 'UsersController@releaseCalling')->name('users.release-calling');
     Route::put('users/{user}/callings/{calling}/support', 'UsersController@supportCalling')->name('users.support-calling');
     Route::put('users/{user}/callings/{calling}/designate', 'UsersController@designateCalling')->name('users.designate-calling');
     Route::get('users/without-callings', 'UsersController@withoutCalling')->name('users.without-calling');
-    Route::resource('users', 'UsersController', ['only' => ['index', 'store']]);
-    Route::get('users/check-status', 'UsersController@checkStatus')->name('users.check-status');
+    Route::resource('users', 'UsersController', ['only' => ['index', 'store', 'show', 'update', 'destroy']]);
 });
